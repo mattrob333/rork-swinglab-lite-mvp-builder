@@ -4,6 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 import VideoPlayer from "@/components/VideoPlayer";
 import PlaybackControls from "@/components/PlaybackControls";
+import ResetButton from "@/components/ResetButton";
 import ScrubberSlider from "@/components/ScrubberSlider";
 import ScreenshotButton from "@/components/ScreenshotButton";
 import { useVideoStore } from "@/hooks/useVideoStore";
@@ -50,6 +51,7 @@ export default function CompareScreen() {
       <View style={styles.stickyControls}>
         <ScrubberSlider />
         <View style={styles.controlButtonsRow}>
+          <ResetButton />
           <PlaybackControls />
           <ScreenshotButton 
             topVideoRef={topVideoRef}
