@@ -47,9 +47,7 @@ export default function CompareScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.stickyControls, { 
-        bottom: 10,
-      }]}>
+      <View style={styles.stickyControls}>
         <ScrubberSlider />
         <View style={styles.controlButtonsRow}>
           <PlaybackControls />
@@ -84,12 +82,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
+    bottom: 0,
     backgroundColor: Colors.background,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
     paddingHorizontal: 8,
     paddingTop: 8,
-    paddingBottom: 8,
+    paddingBottom: 0,
   },
   controlButtonsRow: {
     flexDirection: "row",
@@ -97,5 +96,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     marginTop: 8,
+    paddingBottom: 8,
   },
 });
