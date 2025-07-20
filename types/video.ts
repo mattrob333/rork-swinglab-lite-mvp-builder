@@ -7,7 +7,5 @@ export interface VideoSource {
 }
 
 export interface ProSwing extends VideoSource {
-  golfer: string;
-  club: string;
-  year?: number;
+  player: string;
 }

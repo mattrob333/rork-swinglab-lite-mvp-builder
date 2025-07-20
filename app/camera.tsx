@@ -19,6 +19,7 @@ import * as FileSystem from "expo-file-system";
 import Colors from "@/constants/colors";
 import { useVideoStore } from "@/hooks/useVideoStore";
 import { VideoSource } from "@/types/video";
+import { cropVideoToSquare } from "@/utils/ffmpeg";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const GUIDE_SIZE = screenWidth - 40; // 1:1 square guide
@@ -66,9 +67,10 @@ export default function CameraScreen() {
       setIsRecording(true);
       
       try {
-        // Start recording video
+        // Start recording video with enhanced options
         const recordingOptions = {
           quality: '720p' as const,
+          videoStabilization: 'cinematic' as const,
           maxDuration: 10, // 10 seconds max
           mute: false,
         };
@@ -119,21 +121,17 @@ export default function CameraScreen() {
     try {
       setLoading(true);
       
-      // Create a unique filename
-      const timestamp = Date.now();
-      const fileName = `swing_${timestamp}.mp4`;
-      const newPath = `${FileSystem.documentDirectory}${fileName}`;
-      
-      // Copy the video to a permanent location
-      await FileSystem.copyAsync({
-        from: videoUri,
-        to: newPath,
+      // Process video to ensure 720x720 square format
+      const processedVideoUri = await cropVideoToSquare(videoUri, {
+        targetWidth: 720,
+        targetHeight: 720,
+        quality: 0.9,
       });
       
       // Create the video object
       const video: VideoSource = {
-        id: timestamp.toString(),
-        uri: newPath,
+        id: Date.now().toString(),
+        uri: processedVideoUri,
         name: `My Swing ${new Date().toLocaleDateString()}`,
       };
       

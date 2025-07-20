@@ -8,7 +8,7 @@ import { router } from "expo-router";
 import { FolderOpen, Plus } from "lucide-react-native";
 
 import Colors from "@/constants/colors";
-import proSwings from "@/constants/proSwings";
+import { useProSwings } from "@/hooks/useProSwings";
 import { useVideoStore } from "@/hooks/useVideoStore";
 import { ProSwing, VideoSource } from "@/types/video";
 import VideoCropper from "@/components/VideoCropper";
@@ -19,6 +19,9 @@ export default function ProLibraryScreen() {
   const [selectedVideoUri, setSelectedVideoUri] = useState<string | null>(null);
   const { setTopVideo } = useVideoStore();
   const insets = useSafeAreaInsets();
+
+  // Fetch pro swings from cloud storage
+  const { data: proSwings = [], isLoading: isLoadingSwings, error } = useProSwings();
 
   const selectProSwing = (swing: ProSwing) => {
     if (Platform.OS !== 'web') {
@@ -112,13 +115,25 @@ export default function ProLibraryScreen() {
         </Text>
       </View>
 
-      <FlatList
-        data={proSwings}
-        renderItem={renderProSwing}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 60 }]}
-        ListHeaderComponent={renderHeader}
-      />
+      {isLoadingSwings ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+          <Text style={styles.loadingText}>Loading pro swings...</Text>
+        </View>
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Failed to load pro swings</Text>
+          <Text style={styles.errorSubtext}>Using offline data</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={proSwings}
+          renderItem={renderProSwing}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 60 }]}
+          ListHeaderComponent={renderHeader}
+        />
+      )}
 
       <VideoCropper
         visible={showCropper}
@@ -206,5 +221,34 @@ const styles = StyleSheet.create({
   swingDetails: {
     fontSize: 14,
     color: Colors.textSecondary,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: Colors.textSecondary,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  errorText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.text,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  errorSubtext: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
   },
 });
